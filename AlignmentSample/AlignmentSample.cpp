@@ -1,5 +1,5 @@
 #ifndef STRICT
-#define STRICT	// Œµ–§‚ÈƒR[ƒh‚ğŒ^‚ğ—v‹‚·‚é
+#define STRICT	// å³å¯†ãªã‚³ãƒ¼ãƒ‰ã‚’å‹ã‚’è¦æ±‚ã™ã‚‹
 #endif
 #include <windows.h>
 #include <tchar.h>
@@ -8,38 +8,38 @@
 
 #pragma comment( lib, "k4a.lib" )
 
-#define ENABLE_CSV_OUTPUT		1			// 1=CSV o—Í‚ğ—LŒø‚É‚·‚é
+#define ENABLE_CSV_OUTPUT		1			// 1=CSV å‡ºåŠ›ã‚’æœ‰åŠ¹ã«ã™ã‚‹
 
-// ƒCƒ[ƒW‚Ì‰ğ‘œ“x
+// ã‚¤ãƒ¡ãƒ¼ã‚¸ã®è§£åƒåº¦
 #define COLOR_RESOLUTION_WIDTH	(1280)
 #define COLOR_RESOLUTION_HEIGHT	(720)
 #define DEPTH_RESOLUTION_WIDTH	(640)
 #define DEPTH_RESOLUTION_HEIGHT	(576)
 
-// Win32 ƒAƒvƒŠ—p‚Ìƒpƒ‰ƒ[ƒ^
-static const TCHAR szClassName[] = TEXT("ƒAƒ‰ƒCƒƒ“ƒgƒTƒ“ƒvƒ‹");
-HWND g_hWnd = NULL;							// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌƒEƒBƒ“ƒhƒE
-HBITMAP g_hBMP[4] = { NULL, }, g_hBMPold[4] = { NULL, };	// •\¦‚·‚éƒrƒbƒgƒ}ƒbƒv‚Ìƒnƒ“ƒhƒ‹
-HDC g_hDCBMP[4] = { NULL, };				// •\¦‚·‚éƒrƒbƒgƒ}ƒbƒv‚ÌƒRƒ“ƒeƒLƒXƒg
-BITMAPINFO g_biBMP[4] = { { 0, }, };		// ƒrƒbƒgƒ}ƒbƒv‚Ìî•ñ (‰ğ‘œ“x‚âƒtƒH[ƒ}ƒbƒg)
-LPDWORD g_pdwPixel[4] = { NULL, };			// ƒrƒbƒgƒ}ƒbƒv‚Ì’†g‚Ìæ“ª (ƒsƒNƒZƒ‹î•ñ)
+// Win32 ã‚¢ãƒ—ãƒªç”¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+static const TCHAR szClassName[] = TEXT("ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆã‚µãƒ³ãƒ—ãƒ«");
+HWND g_hWnd = NULL;							// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦
+HBITMAP g_hBMP[4] = { NULL, }, g_hBMPold[4] = { NULL, };	// è¡¨ç¤ºã™ã‚‹ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ãƒãƒ³ãƒ‰ãƒ«
+HDC g_hDCBMP[4] = { NULL, };				// è¡¨ç¤ºã™ã‚‹ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+BITMAPINFO g_biBMP[4] = { { 0, }, };		// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®æƒ…å ± (è§£åƒåº¦ã‚„ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆ)
+LPDWORD g_pdwPixel[4] = { NULL, };			// ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã®ä¸­èº«ã®å…ˆé ­ (ãƒ”ã‚¯ã‚»ãƒ«æƒ…å ±)
 
-// Azure Kinect —p‚Ìƒpƒ‰ƒ[ƒ^
-k4a_device_t g_hAzureKinect = nullptr;		// Azure Kinect ‚ÌƒfƒoƒCƒXƒnƒ“ƒhƒ‹
+// Azure Kinect ç”¨ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿
+k4a_device_t g_hAzureKinect = nullptr;		// Azure Kinect ã®ãƒ‡ãƒã‚¤ã‚¹ãƒãƒ³ãƒ‰ãƒ«
 k4a_transformation_t g_hTransformation = nullptr;
 k4a_image_t g_hTransformedDepthImage = nullptr;
 k4a_image_t g_hTransformedColorImage = nullptr;
 
-// Kinect ‚ğ‰Šú‰»‚·‚é
+// Kinect ã‚’åˆæœŸåŒ–ã™ã‚‹
 k4a_result_t CreateKinect()
 {
 	k4a_result_t hr;
 
-	// Azure Kinect ‚ğ‰Šú‰»‚·‚é
+	// Azure Kinect ã‚’åˆæœŸåŒ–ã™ã‚‹
 	hr = k4a_device_open( K4A_DEVICE_DEFAULT, &g_hAzureKinect );
 	if ( hr == K4A_RESULT_SUCCEEDED )
 	{
-		// Azure Kinect ‚ÌƒJƒƒ‰İ’è
+		// Azure Kinect ã®ã‚«ãƒ¡ãƒ©è¨­å®š
 		k4a_device_configuration_t config = K4A_DEVICE_CONFIG_INIT_DISABLE_ALL;
 		config.color_format = K4A_IMAGE_FORMAT_COLOR_BGRA32;
 		config.color_resolution = K4A_COLOR_RESOLUTION_720P;
@@ -51,12 +51,12 @@ k4a_result_t CreateKinect()
 		config.subordinate_delay_off_master_usec = 0;
 		config.disable_streaming_indicator = false;
 
-		// ƒLƒƒƒŠƒuƒŒ[ƒVƒ‡ƒ“î•ñ‚ğæ“¾‚·‚é
+		// ã‚­ãƒ£ãƒªãƒ–ãƒ¬ãƒ¼ã‚·ãƒ§ãƒ³æƒ…å ±ã‚’å–å¾—ã™ã‚‹
 		k4a_calibration_t hCalibration;
 		hr = k4a_device_get_calibration( g_hAzureKinect, config.depth_mode, config.color_resolution, &hCalibration );
 		if ( hr == K4A_RESULT_SUCCEEDED )
 		{
-			// •ÏŠ·ƒCƒ[ƒW‚ğì¬‚·‚é
+			// å¤‰æ›ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä½œæˆã™ã‚‹
 			g_hTransformation = k4a_transformation_create( &hCalibration );
 			hr = k4a_image_create( K4A_IMAGE_FORMAT_DEPTH16, COLOR_RESOLUTION_WIDTH, COLOR_RESOLUTION_HEIGHT, COLOR_RESOLUTION_WIDTH * sizeof(uint16_t), &g_hTransformedDepthImage );
 			if ( hr == K4A_RESULT_SUCCEEDED )
@@ -64,7 +64,7 @@ k4a_result_t CreateKinect()
 				hr = k4a_image_create( K4A_IMAGE_FORMAT_COLOR_BGRA32, DEPTH_RESOLUTION_WIDTH, DEPTH_RESOLUTION_HEIGHT, DEPTH_RESOLUTION_WIDTH * sizeof(uint32_t), &g_hTransformedColorImage );
 				if ( hr == K4A_RESULT_SUCCEEDED )
 				{
-					// Azure Kinect ‚Ìg—p‚ğŠJn‚·‚é
+					// Azure Kinect ã®ä½¿ç”¨ã‚’é–‹å§‹ã™ã‚‹
 					hr = k4a_device_start_cameras( g_hAzureKinect, &config );
 					if ( hr == K4A_RESULT_SUCCEEDED )
 					{
@@ -74,26 +74,26 @@ k4a_result_t CreateKinect()
 			}
 		}
 
-		// Azure Kinect ‚Ìg—p‚ğ‚â‚ß‚é
-		MessageBox( NULL, TEXT("Azure Kinect ‚ªŠJn‚Å‚«‚Ü‚¹‚ñ‚Å‚µ‚½"), TEXT("ƒGƒ‰["), MB_OK );
+		// Azure Kinect ã®ä½¿ç”¨ã‚’ã‚„ã‚ã‚‹
+		MessageBox( NULL, TEXT("Azure Kinect ãŒé–‹å§‹ã§ãã¾ã›ã‚“ã§ã—ãŸ"), TEXT("ã‚¨ãƒ©ãƒ¼"), MB_OK );
 		k4a_device_close( g_hAzureKinect );
 	}
 	else
 	{
-		MessageBox( NULL, TEXT("Azure Kinect ‚Ì‰Šú‰»‚É¸”s - ƒJƒƒ‰‚Ìó‘Ô‚ğŠm”F‚µ‚Ä‚­‚¾‚³‚¢"), TEXT("ƒGƒ‰["), MB_OK );
+		MessageBox( NULL, TEXT("Azure Kinect ã®åˆæœŸåŒ–ã«å¤±æ•— - ã‚«ãƒ¡ãƒ©ã®çŠ¶æ…‹ã‚’ç¢ºèªã—ã¦ãã ã•ã„"), TEXT("ã‚¨ãƒ©ãƒ¼"), MB_OK );
 	}
 	return hr;
 }
 
-// Kinect ‚ğI—¹‚·‚é
+// Kinect ã‚’çµ‚äº†ã™ã‚‹
 void DestroyKinect()
 {
 	if ( g_hAzureKinect )
 	{
-		// Azure Kinect ‚ğ’â~‚·‚é
+		// Azure Kinect ã‚’åœæ­¢ã™ã‚‹
 		k4a_device_stop_cameras( g_hAzureKinect );
 
-		// •ÏŠ·ƒCƒ[ƒW‚ğ‰ğ•ú‚·‚é
+		// å¤‰æ›ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’è§£æ”¾ã™ã‚‹
 		if ( g_hTransformedDepthImage )
 		{
 			k4a_image_release( g_hTransformedDepthImage );
@@ -110,44 +110,44 @@ void DestroyKinect()
 			g_hTransformation = nullptr;
 		}
 
-		// Azure Kinect ‚Ìg—p‚ğ‚â‚ß‚é
+		// Azure Kinect ã®ä½¿ç”¨ã‚’ã‚„ã‚ã‚‹
 		k4a_device_close( g_hAzureKinect );
 		g_hAzureKinect = nullptr;
 	}
 }
 
-// Kinect ‚ÌƒƒCƒ“ƒ‹[ƒvˆ—
+// Kinect ã®ãƒ¡ã‚¤ãƒ³ãƒ«ãƒ¼ãƒ—å‡¦ç†
 uint32_t KinectProc()
 {
 	k4a_wait_result_t hr;
 	uint32_t uImageSize = 0;
 
-	// ƒLƒƒƒvƒ`ƒƒ[‚·‚é
+	// ã‚­ãƒ£ãƒ—ãƒãƒ£ãƒ¼ã™ã‚‹
 	k4a_capture_t hCapture = nullptr;
 	hr = k4a_device_get_capture( g_hAzureKinect, &hCapture, K4A_WAIT_INFINITE );
 	if ( hr == K4A_WAIT_RESULT_SUCCEEDED )
 	{
 		k4a_image_t hDepthImage, hColorImage;
 
-		// [“xƒCƒ[ƒW‚ğæ“¾‚·‚é
+		// æ·±åº¦ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’å–å¾—ã™ã‚‹
 		hDepthImage = k4a_capture_get_depth_image( hCapture );
 
-		// ƒJƒ‰[ƒCƒ[ƒW‚ğæ“¾‚·‚é
+		// ã‚«ãƒ©ãƒ¼ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’å–å¾—ã™ã‚‹
 		hColorImage = k4a_capture_get_color_image( hCapture );
 
-		// ƒJƒ‰[‚©‚ç[“x‚É•ÏŠ·‚·‚é
+		// ã‚«ãƒ©ãƒ¼ã‹ã‚‰æ·±åº¦ã«å¤‰æ›ã™ã‚‹
 		const k4a_result_t rTransColorToDepth = k4a_transformation_color_image_to_depth_camera( g_hTransformation, hDepthImage, hColorImage, g_hTransformedColorImage );
 
-		// [“x‚©‚çƒJƒ‰[‚É•ÏŠ·‚·‚é
+		// æ·±åº¦ã‹ã‚‰ã‚«ãƒ©ãƒ¼ã«å¤‰æ›ã™ã‚‹
 		const k4a_result_t rTransDepthToColor = k4a_transformation_depth_image_to_color_camera( g_hTransformation, hDepthImage, g_hTransformedDepthImage );
 
 		if ( hDepthImage )
 		{
-			// ƒCƒ[ƒWƒsƒNƒZƒ‹‚Ìæ“ªƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
+			// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ”ã‚¯ã‚»ãƒ«ã®å…ˆé ­ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
 			const uint16_t* pDepth = (uint16_t*) k4a_image_get_buffer( hDepthImage );
 			if ( pDepth )
 			{
-				// ƒCƒ[ƒWƒTƒCƒY‚ğæ“¾‚·‚é
+				// ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 				uImageSize = (uint32_t) k4a_image_get_size( hDepthImage ) / sizeof(uint16_t);
 				for( uint32_t u = 0; u < uImageSize; u++ )
 				{
@@ -157,11 +157,11 @@ uint32_t KinectProc()
 
 				if ( rTransColorToDepth == K4A_RESULT_SUCCEEDED )
 				{
-					// •ÏŠ·ƒoƒbƒtƒ@‚ğˆ—‚·‚é
+					// å¤‰æ›ãƒãƒƒãƒ•ã‚¡ã‚’å‡¦ç†ã™ã‚‹
 					const uint32_t* pTrans = (uint32_t*) k4a_image_get_buffer( g_hTransformedColorImage );
 					if ( pTrans )
 					{
-						// ƒCƒ[ƒWƒTƒCƒY‚ğæ“¾‚·‚é
+						// ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 						uImageSize = (uint32_t) k4a_image_get_size( g_hTransformedColorImage ) / sizeof(uint32_t);
 						for( uint32_t u = 0; u < uImageSize; u++ )
 						{
@@ -178,21 +178,21 @@ uint32_t KinectProc()
 
 		if ( hColorImage )
 		{
-			// ƒCƒ[ƒWƒsƒNƒZƒ‹‚Ìæ“ªƒ|ƒCƒ“ƒ^‚ğæ“¾‚·‚é
+			// ã‚¤ãƒ¡ãƒ¼ã‚¸ãƒ”ã‚¯ã‚»ãƒ«ã®å…ˆé ­ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹
 			const uint32_t* pColor = (uint32_t*) k4a_image_get_buffer( hColorImage );
 			if ( pColor )
 			{
-				// ƒCƒ[ƒWƒTƒCƒY‚ğæ“¾‚·‚é
+				// ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 				uImageSize = (uint32_t) k4a_image_get_size( hColorImage );
 				CopyMemory( g_pdwPixel[1], pColor, uImageSize );
 
 				if ( rTransDepthToColor == K4A_RESULT_SUCCEEDED )
 				{
-					// •ÏŠ·ƒoƒbƒtƒ@‚ğˆ—‚·‚é
+					// å¤‰æ›ãƒãƒƒãƒ•ã‚¡ã‚’å‡¦ç†ã™ã‚‹
 					const uint16_t* pTrans = (uint16_t*) k4a_image_get_buffer( g_hTransformedDepthImage );
 					if ( pTrans )
 					{
-						// ƒCƒ[ƒWƒTƒCƒY‚ğæ“¾‚·‚é
+						// ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 						uImageSize = (uint32_t) k4a_image_get_size( g_hTransformedDepthImage ) / sizeof(uint16_t);
 						for( uint32_t u = 0; u < uImageSize; u++ )
 						{
@@ -207,10 +207,10 @@ uint32_t KinectProc()
 			}
 		}
 
-		// ƒLƒƒƒvƒ`ƒƒ[‚ğ‰ğ•ú‚·‚é
+		// ã‚­ãƒ£ãƒ—ãƒãƒ£ãƒ¼ã‚’è§£æ”¾ã™ã‚‹
 		k4a_capture_release( hCapture );
 
-		// ƒCƒ[ƒW‚ğ‰ğ•ú‚·‚é
+		// ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’è§£æ”¾ã™ã‚‹
 		if ( hDepthImage )
 			k4a_image_release( hDepthImage );
 		if ( hColorImage )
@@ -220,7 +220,7 @@ uint32_t KinectProc()
 }
 
 #if ENABLE_CSV_OUTPUT
-// CSV ƒtƒ@ƒCƒ‹‚Éƒf[ƒ^‚ğo—Í‚·‚é
+// CSV ãƒ•ã‚¡ã‚¤ãƒ«ã«ãƒ‡ãƒ¼ã‚¿ã‚’å‡ºåŠ›ã™ã‚‹
 void WriteCSV()
 {
 	HANDLE hFile = CreateFileA( "alignment.csv", GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
@@ -228,7 +228,7 @@ void WriteCSV()
 	{
 		for( int y = 0; y < DEPTH_RESOLUTION_HEIGHT; y++ )
 		{
-			// ƒJƒ‰[î•ñ‚ğ CSV ‚Éo—Í
+			// ã‚«ãƒ©ãƒ¼æƒ…å ±ã‚’ CSV ã«å‡ºåŠ›
 			char szTmp[8];
 			char szText[DEPTH_RESOLUTION_WIDTH * sizeof(szTmp)] = "";
 			for( int x = 0; x < DEPTH_RESOLUTION_WIDTH; x++ )
@@ -239,7 +239,7 @@ void WriteCSV()
 				strcat_s( szText, DEPTH_RESOLUTION_HEIGHT * sizeof(szTmp), szTmp );
 			}
 
-			// ‰üs‚µ‚Äƒtƒ@ƒCƒ‹o—Í
+			// æ”¹è¡Œã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«å‡ºåŠ›
 			strcat_s( szText, DEPTH_RESOLUTION_HEIGHT * sizeof(szTmp), "\r\n" );
 			const DWORD dwLen = (DWORD) strlen( szText );
 			DWORD dwWritten;
@@ -256,17 +256,17 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	{
 	case WM_PAINT:
 		{
-			// ‰æ–Ê•\¦ˆ—
+			// ç”»é¢è¡¨ç¤ºå‡¦ç†
 			PAINTSTRUCT ps;
 			HDC hDC = BeginPaint( hWnd, &ps );
 
-			// ‰æ–ÊƒTƒCƒY‚ğæ“¾‚·‚é
+			// ç”»é¢ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹
 			RECT rect;
 			GetClientRect( hWnd, &rect );
 
-			// ƒJƒ‰[‚Ì•\¦
-			const int iBltWidth = rect.right /= 2;
-			const int iBltHeight = rect.bottom /= 2;
+			// ã‚«ãƒ©ãƒ¼ã®è¡¨ç¤º
+			const int iBltWidth = rect.right / 2;
+			const int iBltHeight = rect.bottom / 2;
 			StretchBlt( hDC, 0, 0, iBltWidth, iBltHeight, g_hDCBMP[0], 0, 0, DEPTH_RESOLUTION_WIDTH, DEPTH_RESOLUTION_HEIGHT, SRCCOPY );
 			StretchBlt( hDC, iBltWidth, 0, iBltWidth, iBltHeight, g_hDCBMP[1], 0, 0, COLOR_RESOLUTION_WIDTH, COLOR_RESOLUTION_HEIGHT, SRCCOPY );
 			StretchBlt( hDC, 0, iBltHeight, iBltWidth, iBltHeight, g_hDCBMP[2], 0, 0, DEPTH_RESOLUTION_WIDTH, DEPTH_RESOLUTION_HEIGHT, SRCCOPY );
@@ -276,7 +276,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		return 0;
 #if ENABLE_CSV_OUTPUT
 	case WM_KEYDOWN:
-		// ƒXƒy[ƒXƒL[‚ª‰Ÿ‚³‚ê‚½‚ç CSV o—Í‚·‚é
+		// ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã‚‰ CSV å‡ºåŠ›ã™ã‚‹
 		if ( wParam == VK_SPACE )
 			WriteCSV();
 		break;
@@ -292,7 +292,7 @@ LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 	return 0;
 }
 
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‰Šú‰» (ƒEƒBƒ“ƒhƒE‚â•`‰æ—p‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬)
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ– (ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚„æç”»ç”¨ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆ)
 HRESULT InitApp( HINSTANCE hInst, int nCmdShow )
 {
 	WNDCLASSEX wc = { 0, };
@@ -307,19 +307,19 @@ HRESULT InitApp( HINSTANCE hInst, int nCmdShow )
 	wc.hIconSm = LoadIcon( NULL, IDI_APPLICATION );
 	if ( ! RegisterClassEx( &wc ) )
 	{
-		MessageBox( NULL, TEXT("ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒNƒ‰ƒX‚Ì‰Šú‰»‚É¸”s"), TEXT("ƒGƒ‰["), MB_OK );
+		MessageBox( NULL, TEXT("ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¯ãƒ©ã‚¹ã®åˆæœŸåŒ–ã«å¤±æ•—"), TEXT("ã‚¨ãƒ©ãƒ¼"), MB_OK );
 		return E_FAIL;
 	}
 
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒEƒBƒ“ƒhƒE‚ğì¬‚·‚é
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã‚’ä½œæˆã™ã‚‹
 	g_hWnd = CreateWindow( szClassName, szClassName, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, NULL, NULL, hInst, NULL );
 	if ( ! g_hWnd )
 	{
-		MessageBox( NULL, TEXT("ƒEƒBƒ“ƒhƒE‚Ì‰Šú‰»‚É¸”s"), TEXT("ƒGƒ‰["), MB_OK );
+		MessageBox( NULL, TEXT("ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ã®åˆæœŸåŒ–ã«å¤±æ•—"), TEXT("ã‚¨ãƒ©ãƒ¼"), MB_OK );
 		return E_FAIL;
 	}
 
-	// ‰æ–Ê•\¦—p‚Ìƒrƒbƒgƒ}ƒbƒv‚ğì¬‚·‚é
+	// ç”»é¢è¡¨ç¤ºç”¨ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œæˆã™ã‚‹
 	ZeroMemory( &g_biBMP[0], sizeof(g_biBMP[0]) );
 	g_biBMP[0].bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	g_biBMP[0].bmiHeader.biBitCount = 32;
@@ -369,10 +369,10 @@ HRESULT InitApp( HINSTANCE hInst, int nCmdShow )
 	return S_OK;
 }
 
-// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ÌŒãn––
+// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®å¾Œå§‹æœ«
 HRESULT UninitApp()
 {
-	// ‰æ–Ê•\¦—p‚Ìƒrƒbƒgƒ}ƒbƒv‚ğ‰ğ•ú‚·‚é
+	// ç”»é¢è¡¨ç¤ºç”¨ã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’è§£æ”¾ã™ã‚‹
 	for( int i = 0; i < 4; i++ )
 	{
 		if ( g_hDCBMP[i] || g_hBMP[i] )
@@ -387,37 +387,37 @@ HRESULT UninitApp()
 	return S_OK;
 }
 
-// ƒGƒ“ƒgƒŠ[ƒ|ƒCƒ“ƒg
+// ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãƒã‚¤ãƒ³ãƒˆ
 int WINAPI WinMain( HINSTANCE hInst, HINSTANCE, LPSTR, int nCmdShow )
 {
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚Ì‰Šú‰»ŠÖ”‚ğŒÄ‚Ô
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã®åˆæœŸåŒ–é–¢æ•°ã‚’å‘¼ã¶
 	if ( FAILED( InitApp( hInst, nCmdShow ) ) )
 		return 1;
 
-	// Kinect ‚Ì‰Šú‰»ŠÖ”‚ğŒÄ‚Ô
+	// Kinect ã®åˆæœŸåŒ–é–¢æ•°ã‚’å‘¼ã¶
 	if ( FAILED( CreateKinect() ) )
 		return 1;
 
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“ƒ‹[ƒv
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ãƒ«ãƒ¼ãƒ—
 	MSG msg;
 	while( GetMessage( &msg, NULL, 0, 0 ) )
 	{
-		// ƒEƒBƒ“ƒhƒEƒƒbƒZ[ƒW‚ğˆ—
+		// ã‚¦ã‚£ãƒ³ãƒ‰ã‚¦ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å‡¦ç†
 		TranslateMessage( &msg );
 		DispatchMessage( &msg );
 
-		// Kinect ˆ—ŠÖ”‚ğŒÄ‚Ô
+		// Kinect å‡¦ç†é–¢æ•°ã‚’å‘¼ã¶
 		if ( KinectProc() )
 		{
-			// Kinect î•ñ‚ÉXV‚ª‚ ‚ê‚Î•`‰æƒƒbƒZ[ƒW‚ğ”­s‚·‚é
+			// Kinect æƒ…å ±ã«æ›´æ–°ãŒã‚ã‚Œã°æç”»ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’ç™ºè¡Œã™ã‚‹
 			InvalidateRect( g_hWnd, NULL, TRUE );
 		}
 	}
 
-	// Kinect ‚ÌI—¹ŠÖ”‚ğŒÄ‚Ô
+	// Kinect ã®çµ‚äº†é–¢æ•°ã‚’å‘¼ã¶
 	DestroyKinect();
 
-	// ƒAƒvƒŠƒP[ƒVƒ‡ƒ“‚ğI—¹ŠÖ”‚ğŒÄ‚Ô
+	// ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’çµ‚äº†é–¢æ•°ã‚’å‘¼ã¶
 	UninitApp();
 
 	return (int) msg.wParam;
